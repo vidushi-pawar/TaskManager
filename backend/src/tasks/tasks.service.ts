@@ -24,9 +24,13 @@ export class TasksService {
   }
 
   async update(userId: string, taskId: string, dto: UpdateTaskDto): Promise<TaskDocument> {
-    const task = await this.findOne(userId, taskId);
-    Object.assign(task, dto);
-    return task.save();
+    await this.findOne(userId, taskId);
+    const updated = await this.taskModel.findByIdAndUpdate(
+      taskId,
+      { $set: dto },
+      { new: true, runValidators: true },
+    );
+    return updated!;
   }
 
   async remove(userId: string, taskId: string): Promise<{ message: string }> {
